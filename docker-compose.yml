@@ -1,0 +1,29 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: task-api:local
+    ports:
+      - "8000:8000"
+    environment:
+      TASK_API_ENVIRONMENT: local
+      TASK_API_LOG_LEVEL: INFO
+      TASK_API_DATABASE_URL: sqlite:////data/tasks.db
+    volumes:
+      - task-data:/data
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+volumes:
+  task-data:
